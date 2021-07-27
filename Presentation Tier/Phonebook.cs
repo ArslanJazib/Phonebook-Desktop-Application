@@ -1,35 +1,55 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 using LogicTier;
-using System.Data.SqlClient;
-using System.Collections.Generic;
-namespace J10
+namespace J8
 {
     public partial class phone_book : Form
     {
         public DataHandler dataHandler = new DataHandler();
         public int index;
         bool delete_flag=false;
-        bool update_flag = false;
-
+        public int counter = 1;
         public phone_book()
         {
             InitializeComponent();
-            
         }
+
 
         private void phone_book_Load(object sender, EventArgs e)
         {
-            phoneBook.DataSource=dataHandler.LoadDataGird();
+            for (int index=0;index<DataHandler.total;index++)
+            {
+                string serial=null;
+                string name=null;
+                string number=null;
+                string email=null;
+                string address=null;
+                dataHandler.LoadDataGird(ref serial, ref name, ref number, ref email, ref address);
+                phoneBook.Rows.Add(serial, name, number, email, address);
+                counter = int.Parse(serial);
+                if(index+1== DataHandler.total)
+                {
+                    counter ++;
+                }
+            }
 
         }
-       
+
+
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
         private void addicon_Click(object sender, EventArgs e)
         {
             Add_Contact add = new Add_Contact(this);
             add.Show();
             this.Hide();
         }
+
+
 
         private void search_name_CheckedChanged(object sender, EventArgs e)
         {
@@ -50,29 +70,81 @@ namespace J10
         {
             if(search_tbox.Text.Length>0)
             {
-                CurrencyManager cm = (CurrencyManager)BindingContext[phoneBook.DataSource];
                 foreach (DataGridViewRow row in phoneBook.Rows)
                 {
                     if (!row.IsNewRow)
                     {
-                        cm.SuspendBinding();
                         row.Visible = false;
                     }
                 }
                 if (search_name.Checked == true)
                 {
-                    SearchComparsion(search_tbox.Text, 1);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[1].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+
+                                for (int loop = row.Index + 1; loop < phoneBook.RowCount - 1; loop++)
+                                {
+                                    if (phoneBook.Rows[loop].Cells[1].Value.ToString().Equals(search_tbox.Text))
+                                    {
+                                        phoneBook.Rows[loop].Visible = true;
+                                    }
+
+                                }
+
+
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+                    }
                 }
                 if (search_email.Checked == true)
                 {
-                    SearchComparsion(search_tbox.Text, 2);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[3].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+                    }
                 }
                 if (search_number.Checked == true)
                 {
-                    SearchComparsion(search_tbox.Text, 3);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[2].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+                        }
+                    }
                 }
-                cm.ResumeBinding();
             }
             else
             {
@@ -85,31 +157,79 @@ namespace J10
         {
             if(search_tbox.Text.Length>0)
             {
-                CurrencyManager cm = (CurrencyManager)BindingContext[phoneBook.DataSource];
                 foreach (DataGridViewRow row in phoneBook.Rows)
                 {
                     if (!row.IsNewRow)
                     {
-                        cm.SuspendBinding();
                         row.Visible = false;
                     }
                 }
                 if (search_name.Checked == true)
                 {
-                    UpdateComparison(search_tbox.Text, 1);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[1].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                index = row.Index;
+                                row.Visible = true;
+                                input update = new input(this);
+                                update.Show();
+                                break;
+                            }
+                        }
+                        catch(Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+
+                    }
+
                 }
                 if (search_email.Checked == true)
                 {
-                    UpdateComparison(search_tbox.Text, 2);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[3].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                input update = new input(this);
+                                update.Show();
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+                        }
+                    }
                 }
                 if (search_number.Checked == true)
                 {
-                    UpdateComparison(search_tbox.Text, 3);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[2].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                input update = new input(this);
+                                update.Show();
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+                        }
+                    }
                 }
-                cm.ResumeBinding();
-
             }
             else
             {
@@ -119,34 +239,87 @@ namespace J10
 
         private void delete_Click(object sender, EventArgs e)
         {
-
-            if (search_tbox.Text.Length > 0)
+            if(search_tbox.Text.Length>0)
             {
-                CurrencyManager cm = (CurrencyManager)BindingContext[phoneBook.DataSource];
                 foreach (DataGridViewRow row in phoneBook.Rows)
                 {
                     if (!row.IsNewRow)
                     {
-                        cm.SuspendBinding();
                         row.Visible = false;
                     }
                 }
                 if (search_name.Checked == true)
                 {
-                    DeleteComparison(search_tbox.Text, 1);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[1].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                for (int loop = row.Index + 1; loop < phoneBook.RowCount - 1; loop++)
+                                {
+                                    if (phoneBook.Rows[loop].Cells[1].Value.ToString().Equals(search_tbox.Text))
+                                    {
+                                        phoneBook.Rows[loop].Visible = true;
+                                    }
+
+                                }
+                                delete_flag = true;
+                                MessageBox.Show("Double click on any cell of the record you want to delete", "Choose", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+                    }
+
                 }
                 if (search_email.Checked == true)
                 {
-                    DeleteComparison(search_tbox.Text, 2);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[3].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                delete_flag = true;
+                                MessageBox.Show("Double click on any cell of the record you want to delete", "Choose", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+                        }
+                    }
                 }
                 if (search_number.Checked == true)
                 {
-                    DeleteComparison(search_tbox.Text, 3);
+                    foreach (DataGridViewRow row in phoneBook.Rows)
+                    {
+                        try
+                        {
+                            if (row.Cells[2].Value.ToString().Equals(search_tbox.Text))
+                            {
+                                row.Visible = true;
+                                delete_flag = true;
+                                MessageBox.Show("Double click on any cell of the record you want to delete", "Choose", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                break;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+                        }
+                    }
                 }
-                cm.ResumeBinding();
-
             }
             else
             {
@@ -158,74 +331,34 @@ namespace J10
         {
             if(delete_flag==true)
             {
-                index = e.RowIndex;
-                string check=dataHandler.Delete(phoneBook.Rows[index].Cells[1].Value.ToString());
-                if(check=="")
-                {
-                    phoneBook.DataSource = dataHandler.LoadDataGird();
-                    MessageBox.Show("Record Deleted", "Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Wrong input", "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                }
+                phoneBook.Rows.RemoveAt(e.RowIndex);
                 delete_flag = false;
-            }
-            if(update_flag==true)
-            {
-                index = e.RowIndex;
-                input update = new input(this);
-                update.Show();
-                update_flag = false;
             }
         }
 
-        private bool SearchComparsion(string input,byte choice)
+        private void phone_book_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SqlDataReader reader = dataHandler.Search(input, choice);
-            var values = new List<string>();
-            int counter = 0;
-            while (reader.Read())
-            {
-                values.Add(reader.GetString(0));
-            }
             foreach (DataGridViewRow row in phoneBook.Rows)
             {
-                if (counter < values.Count && !row.IsNewRow)
+                if (!row.IsNewRow)
                 {
                     try
                     {
-                        foreach (var number in values)
-                        {
-                            if (row.Cells[1].Value.ToString().Equals(number))
-                            {
-                                row.Visible = true;
-                                counter++;
-                                break;
-                            }
-                        }
-                        
+                        dataHandler.StoreDataGird
+                        (row.Cells[0].Value.ToString(),
+                        row.Cells[1].Value.ToString(),
+                        row.Cells[2].Value.ToString(),
+                        row.Cells[3].Value.ToString(),
+                        row.Cells[4].Value.ToString());
                     }
                     catch (Exception exception)
                     {
                         MessageBox.Show(exception.Message, "Unsuccessful", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return false;
+
                     }
+                }
+            }
 
-                }}
-            return true;}
-
-        private void UpdateComparison(string input,byte choice)
-        {
-            update_flag=SearchComparsion(input, choice);
-            MessageBox.Show("Double click on any cell of the record you want to update", "Choose", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void DeleteComparison(string input, byte choice)
-        {
-            delete_flag = SearchComparsion(input, choice);
-            MessageBox.Show("Double click on any cell of the record you want to delete", "Choose", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
